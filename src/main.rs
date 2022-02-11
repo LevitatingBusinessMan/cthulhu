@@ -24,8 +24,8 @@ async fn main() -> Result<(), Error> {
     let sender = client.sender();
 
 
-    let mut commandsMap = HashMap::<&'static str, Box<dyn commands::Command>>::new();
-    commands::register(&mut commandsMap);
+    let mut commands_map = HashMap::<&'static str, Box<dyn commands::CommandMethods>>::new();
+    commands::register(&mut commands_map);
 
     while let Some(message) = stream.next().await.transpose()? {
         print!("{}", message);
@@ -41,7 +41,7 @@ async fn main() -> Result<(), Error> {
                 let arguments = argv.map(|x| x.to_owned()).collect::<Vec<String>>();
                 let target = target.to_owned();
                 println!("{}: {} {}", target, command, arguments.join(" "));
-                handle_command(&mut commandsMap, command, arguments, target, &sender).await?;
+                handle_command(&mut commands_map, message, command, arguments, target, &sender).await?;
             }
         }
     }
@@ -53,10 +53,24 @@ async fn main() -> Result<(), Error> {
 Hashmap with functions.
 Sled
 */
-async fn handle_command(map: &mut HashMap::<&'static str, Box<dyn commands::Command>>, command: String, arguments: Vec<String>, target: String, sender: &Sender) -> Result<(),irc::error::Error> {
+async fn handle_command(
+    map: &mut HashMap::<&'static str, Box<dyn commands::CommandMethods>>,
+    message: Message,
+    command: String,
+    arguments: Vec<String>,
+    target: String,
+    sender: &Sender
+) -> Result<(),irc::error::Error> {
     if let Some(cmd) = map.get::<str>(command.as_ref()) {
+
+        if let Err(error) = cmd.check(message, &arguments) {
+            let error_string = error.to_string();
+            return sender.send_privmsg(&target,format!("Error for {}: {}", command, error_string));
+        }
+
         let result = cmd.run(arguments, &target);
         return sender.send_privmsg(&target,result);
+
     } else {
         //SLED
         return Ok(())
