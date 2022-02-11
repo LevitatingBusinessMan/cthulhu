@@ -4,6 +4,8 @@ use futures::prelude::*;
 
 static PREFIX: &'static str = "!";
 
+pub mod commands;
+
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     // We can also load the Config at runtime via Config::load("path/to/config.toml")
@@ -22,6 +24,11 @@ async fn main() -> Result<(), Error> {
 
     while let Some(message) = stream.next().await.transpose()? {
         print!("{}", message);
+
+        /*
+        Run handler depending on command type
+        */
+
         if let Command::PRIVMSG(ref target, ref msg) = message.command {
             if msg.starts_with(PREFIX) {
                 let mut argv = msg.split_ascii_whitespace();
@@ -37,15 +44,25 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
-//const PING: &str = "ping";
-
+/*
+Hashmap with functions.
+Sled
+*/
 async fn handle_command(command: String, arguments: Vec<String>, target: String, sender: &Sender) -> Result<(),irc::error::Error> {
-    match command.as_ref() {
+    let response = match command.as_ref() {
         "ping" => {
-            sender.send_privmsg(target, "pong")
+            Some(commands::ping::run(arguments, &target))
         },
         _ => {
-            Ok(())
+            None
         }
+    };
+
+    if let Some(response) = response {
+        return sender.send_privmsg(&target,response);
+    } else {
+        //SLED
+        return Ok(())
     }
+
 }
