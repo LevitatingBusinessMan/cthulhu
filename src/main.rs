@@ -1,6 +1,7 @@
 use irc::client::prelude::*;
 use anyhow::{Result, Error};
 use futures::prelude::*;
+use std::collections::HashMap;
 
 static PREFIX: &'static str = "!";
 
@@ -22,6 +23,10 @@ async fn main() -> Result<(), Error> {
     let mut stream = client.stream()?;
     let sender = client.sender();
 
+
+    let mut commandsMap = HashMap::<&'static str, Box<dyn commands::Command>>::new();
+    commands::register(&mut commandsMap);
+
     while let Some(message) = stream.next().await.transpose()? {
         print!("{}", message);
 
@@ -36,7 +41,7 @@ async fn main() -> Result<(), Error> {
                 let arguments = argv.map(|x| x.to_owned()).collect::<Vec<String>>();
                 let target = target.to_owned();
                 println!("{}: {} {}", target, command, arguments.join(" "));
-                handle_command(command, arguments, target, &sender).await?;
+                handle_command(&mut commandsMap, command, arguments, target, &sender).await?;
             }
         }
     }
@@ -48,21 +53,12 @@ async fn main() -> Result<(), Error> {
 Hashmap with functions.
 Sled
 */
-async fn handle_command(command: String, arguments: Vec<String>, target: String, sender: &Sender) -> Result<(),irc::error::Error> {
-    let response = match command.as_ref() {
-        "ping" => {
-            Some(commands::ping::run(arguments, &target))
-        },
-        _ => {
-            None
-        }
-    };
-
-    if let Some(response) = response {
-        return sender.send_privmsg(&target,response);
+async fn handle_command(map: &mut HashMap::<&'static str, Box<dyn commands::Command>>, command: String, arguments: Vec<String>, target: String, sender: &Sender) -> Result<(),irc::error::Error> {
+    if let Some(cmd) = map.get::<str>(command.as_ref()) {
+        let result = cmd.run(arguments, &target);
+        return sender.send_privmsg(&target,result);
     } else {
         //SLED
         return Ok(())
     }
-
 }
