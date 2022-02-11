@@ -13,7 +13,7 @@ async fn main() -> Result<(), Error> {
     let config = Config {
         nickname: Some("cthulhu".to_owned()),
         server: Some("irc.libera.chat".to_owned()),
-        channels: vec!["##test".to_owned()],
+        channels: vec!["##reins_test".to_owned()],
         ..Config::default()
     };
 
@@ -40,7 +40,6 @@ async fn main() -> Result<(), Error> {
                 let command = argv.next().unwrap()[1..].to_owned();
                 let arguments = argv.map(|x| x.to_owned()).collect::<Vec<String>>();
                 let target = target.to_owned();
-                println!("{}: {} {}", target, command, arguments.join(" "));
                 handle_command(&mut commands_map, message, command, arguments, target, &sender).await?;
             }
         }
@@ -63,13 +62,13 @@ async fn handle_command(
 ) -> Result<(),irc::error::Error> {
     if let Some(cmd) = map.get::<str>(command.as_ref()) {
 
-        if let Err(error) = cmd.check(message, &arguments) {
+        if let Err(error) = cmd.check(&message, &arguments) {
             let error_string = error.to_string();
-            return sender.send_privmsg(&target,format!("Error for {}: {}", command, error_string));
+            return sender.send_privmsg(message.response_target().unwrap_or(&target),format!("Error for {}: {}", command, error_string));
         }
 
         let result = cmd.run(arguments, &target);
-        return sender.send_privmsg(&target,result);
+        return sender.send_privmsg(message.response_target().unwrap_or(&target),result);
 
     } else {
         //SLED

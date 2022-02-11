@@ -3,7 +3,7 @@ use crate::commands::*;
 pub struct Ping;
 
 impl CommandDetails for Ping {
-	const Arity: Arity = Arity::Exact(1);
+	const Arity: Arity = Arity::Exact(0);
 	const Aliases: Vec<&'static str> = vec![];
 	const God: bool = false;
 }
