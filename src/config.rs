@@ -14,7 +14,6 @@ pub fn get_gods() -> Vec<String> {
 
 pub fn is_god(hostname: &String) -> bool {
 	//hostname == "user/levitating"
-
 	for god in get_gods() {
 		if &god == hostname {
 			return true;

@@ -1,14 +1,18 @@
 use crate::commands::Arity;
-use std::fmt;
+use std::{fmt, any};
+use anyhow;
+
+pub type PermissionError = anyhow::Error;
 
 pub enum Error {
-	ArityError(ArityError)
+	ArityError(ArityError),
+	PermissionError(PermissionError),
 }
 
 pub struct ArityError {
 	pub arity_type: Arity,
 	pub actual: u8
-} 
+}
 
 impl fmt::Display for ArityError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -22,7 +26,8 @@ impl fmt::Display for ArityError {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		return match self {
-			Error::ArityError(err) => err.fmt(f)
+			Error::ArityError(err) => err.fmt(f),
+			Error::PermissionError(err) => err.fmt(f),
 		};
     }
 }

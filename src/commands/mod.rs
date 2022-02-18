@@ -9,6 +9,8 @@ pub mod help;
 
 pub mod errors;
 
+use errors::*;
+
 pub enum Arity {
 	Minimum(u8),
 	Exact(u8),
@@ -48,37 +50,16 @@ pub trait CommandMethods {
 	fn god(&self) -> bool;
 	fn usage(&self) -> &'static str;
 	fn description(&self) -> &'static str;
-	fn check(&self, _message: &Message, arguments: &Vec<String>) -> Result<(),errors::Error> {
-		let argc = arguments.len();
-		let arity_type = self.arity();
-		let arity_error = match arity_type {
-			Arity::Exact(n) => {
-				if n != argc as u8 {
-					Some(errors::ArityError {
-						arity_type: arity_type,
-						actual: argc as u8
-					})
-				} else {
-					None
-				}
-			},
-			Arity::Minimum(n) => {
-				if n > argc as u8 {
-					Some(errors::ArityError {
-						arity_type: arity_type,
-						actual: argc as u8
-					})
-				} else {
-					None
-				}
-			}
-		};
-
-		if let Some(a_err) = arity_error {
-			return Err(errors::Error::ArityError(a_err))
+	fn check(&self, _message: &Message, user: &User, arguments: &Vec<String>) -> Result<(),errors::Error> {
+		if let Err(arity_error) = arity_check(arguments.len() as u8, self.arity()) {
+			return Err(errors::Error::ArityError(arity_error));
 		}
 
-		return Ok(())
+		if self.god() && !user.god {
+			return Err(errors::Error::PermissionError(anyhow::anyhow!("You don't have the permission to run this command.")));
+		}
+
+		Ok(())
 	}
 	fn help(&self) -> String {
 		if self.usage().is_empty() {
@@ -87,6 +68,50 @@ pub trait CommandMethods {
 			format!("{} {} - {}", self.name(), usage_color(self.usage()), self.description())
 		}
 	}
+}
+
+/// Generates a help page
+/// If the user is god then it will include god commands
+fn generate_help(has_god: bool) -> String {
+	let mut command_list = vec![];
+	for (name, cmd) in COMMAND_MAP.iter() {
+		if has_god  || !cmd.god() {
+			command_list.push(cmd.name()) 
+		}
+	}
+	format!("Welcome to r'lyeh, where cthulhu awaits dead but sleeping. Available commands: {}", command_list.join(", "))
+}
+
+/// Check if the right amount of arguments were used
+fn arity_check(arcg: u8, arity_type: Arity) -> Result<(),errors::ArityError> {
+	let arity_error = match arity_type {
+		Arity::Exact(n) => {
+			if n != arcg {
+				Some(errors::ArityError {
+					arity_type: arity_type,
+					actual: arcg
+				})
+			} else {
+				None
+			}
+		},
+		Arity::Minimum(n) => {
+			if n > arcg {
+				Some(errors::ArityError {
+					arity_type: arity_type,
+					actual: arcg
+				})
+			} else {
+				None
+			}
+		}
+	};
+
+	if let Some(a_err) = arity_error {
+		return Err(a_err)
+	}
+
+	Ok(())
 }
 
 /// Colorize a usage string

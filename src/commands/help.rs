@@ -12,9 +12,9 @@ impl CommandDetails for Help {
 }
 
 impl CommandMethods for Help {
-	fn run(&self, _user: User, arguments: Vec<String>, _target: &String) -> String {
+	fn run(&self, user: User, arguments: Vec<String>, _target: &String) -> String {
 		if arguments.len() == 0 {
-			return "help".to_owned();
+			generate_help(user.god)
 		} else {
 			let command = &arguments[0];
 			get_command(command).map(|c| c.help()).unwrap_or_else(|| "There's no such command.".to_owned())

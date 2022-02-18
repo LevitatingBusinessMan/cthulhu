@@ -59,13 +59,13 @@ async fn handle_command(
 ) -> anyhow::Result<(),anyhow::Error> {
     if let Some(cmd) = commands::get_command(command.as_ref()) {
 
-        if let Err(error) = cmd.check(&message, &arguments) {
+        let user = User::try_from(&message)?;
+
+        if let Err(error) = cmd.check(&message, &user, &arguments) {
             let error_string = error.to_string();
             sender.send_privmsg(message.response_target().unwrap_or(&target),format!("Error for {}: {}", command, error_string))?;
             return Ok(())
         }
-
-        let user = User::try_from(&message)?;
 
         let result = cmd.run(user, arguments, &target);
         sender.send_privmsg(message.response_target().unwrap_or(&target),result)?;
