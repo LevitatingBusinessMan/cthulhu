@@ -1,16 +1,22 @@
 use crate::commands::*;
 
-pub struct Ping;
+pub struct God;
 
-impl CommandDetails for Ping {
+impl CommandDetails for God {
 	const Arity: Arity = Arity::Exact(0);
 	const Aliases: Vec<&'static str> = vec![];
 	const God: bool = false;
 }
 
-impl CommandMethods for Ping {
+use crate::{red, green};
+
+impl CommandMethods for God {
 	fn run(&self, user: User, arguments: Vec<String>, _target: &String) -> String {
-		return "pong".to_owned();
+		if user.god {
+			green!((user.god))
+		} else{
+			red!((user.god))
+		}
 	}
 	fn aliases(&self) -> Vec<&'static str> {
 		Self::Aliases

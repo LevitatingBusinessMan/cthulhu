@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 pub mod ping;
+pub mod god;
 pub mod errors;
 
 pub enum Arity {
@@ -9,9 +10,10 @@ pub enum Arity {
 }
 
 use irc::client::prelude::Message;
+use crate::user::User;
 
 pub trait CommandMethods {
-	fn run(&self, arguments: Vec<String>, target: &String) -> String;
+	fn run(&self, user: User, arguments: Vec<String>, target: &String) -> String;
 	fn arity(&self) -> Arity;
 	fn aliases(&self) -> Vec<&'static str>;
 	fn god(&self) -> bool;
@@ -57,4 +59,5 @@ pub trait CommandDetails {
 
 pub fn register(map: &mut HashMap<&'static str, Box<dyn CommandMethods>>) {
 	map.insert("ping", Box::new(ping::Ping));
+	map.insert("god", Box::new(god::God));
 }

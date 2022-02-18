@@ -6,6 +6,12 @@ use std::collections::HashMap;
 static PREFIX: &'static str = "!";
 
 pub mod commands;
+pub mod user;
+pub mod config;
+#[macro_use]
+pub mod color;
+
+use user::User;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -13,7 +19,7 @@ async fn main() -> Result<(), Error> {
     let config = Config {
         nickname: Some("cthulhu".to_owned()),
         server: Some("irc.libera.chat".to_owned()),
-        channels: vec!["##reins_test".to_owned()],
+        channels: vec!["##levis_test".to_owned()],
         ..Config::default()
     };
 
@@ -59,16 +65,20 @@ async fn handle_command(
     arguments: Vec<String>,
     target: String,
     sender: &Sender
-) -> Result<(),irc::error::Error> {
+) -> anyhow::Result<(),anyhow::Error> {
     if let Some(cmd) = map.get::<str>(command.as_ref()) {
 
         if let Err(error) = cmd.check(&message, &arguments) {
             let error_string = error.to_string();
-            return sender.send_privmsg(message.response_target().unwrap_or(&target),format!("Error for {}: {}", command, error_string));
+            sender.send_privmsg(message.response_target().unwrap_or(&target),format!("Error for {}: {}", command, error_string))?;
+            return Ok(())
         }
 
-        let result = cmd.run(arguments, &target);
-        return sender.send_privmsg(message.response_target().unwrap_or(&target),result);
+        let user = User::try_from(&message)?;
+
+        let result = cmd.run(user, arguments, &target);
+        sender.send_privmsg(message.response_target().unwrap_or(&target),result)?;
+        return Ok(())
 
     } else {
         //SLED
