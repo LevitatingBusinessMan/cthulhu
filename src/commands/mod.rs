@@ -6,6 +6,7 @@ use lazy_static::lazy_static;
 pub mod ping;
 pub mod god;
 pub mod help;
+pub mod save;
 
 pub mod errors;
 
@@ -33,6 +34,8 @@ fn register(map: &mut HashMap<&'static str, Box<dyn CommandMethods + Sync>>) {
 	map.insert("ping", Box::new(ping::Ping));
 	map.insert("god", Box::new(god::God));
 	map.insert("help", Box::new(help::Help));
+	map.insert("save", Box::new(save::Save));
+
 }
 
 

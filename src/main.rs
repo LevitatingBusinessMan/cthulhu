@@ -10,6 +10,8 @@ pub mod user;
 pub mod config;
 #[macro_use]
 pub mod color;
+pub mod disponse;
+pub mod logger;
 
 use user::User;
 
@@ -72,7 +74,9 @@ async fn handle_command(
         return Ok(())
 
     } else {
-        //SLED
-        return Ok(())
+        Ok(match disponse::get(&command) {
+            Some(dispo) => sender.send_privmsg(message.response_target().unwrap_or(&target), dispo.text)?,
+            None => ()
+        })
     }
 }

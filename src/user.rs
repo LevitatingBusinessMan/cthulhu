@@ -1,8 +1,8 @@
 use anyhow::anyhow;
 use irc::client::prelude::{Message, Prefix};
+use serde::{Serialize, Deserialize};
 
-//use irc::irc_proto::{Message, Prefix};
-
+#[derive(Serialize, Deserialize, Clone)]
 pub struct User {
 	/// The current nickname in use by this user
 	pub nickname: String,
