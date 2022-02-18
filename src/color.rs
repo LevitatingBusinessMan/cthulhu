@@ -1,16 +1,23 @@
 //https://modern.ircdocs.horse/formatting.html#color
+//! Basic helper macro's for colored text
 
-//! for colors
 #[macro_export]
 macro_rules! red {
 	($str:tt) => {
-		format!("\x03\x34{}\x03\x30", $str)
+		format!("\x034{}\x0315", $str)
 	}
 }
 
 #[macro_export]
 macro_rules! green {
 	($str:tt) => {
-		format!("\x03\x33{}\x03\x30", $str)
+		format!("\x033{}\x0315", $str)
+	}
+}
+
+#[macro_export]
+macro_rules! grey {
+	($str:tt) => {
+		format!("\x0314{}\x0315", $str)
 	}
 }

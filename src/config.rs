@@ -1,4 +1,5 @@
-//! This module will handle loading the config at some point
+//! This module loads the config, and interfaces with its options
+
 use irc::client::prelude::*;
 
 use lazy_static::lazy_static;

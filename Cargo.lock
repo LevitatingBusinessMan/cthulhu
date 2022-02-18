@@ -276,7 +276,7 @@ dependencies = [
 [[package]]
 name = "irc"
 version = "0.15.0"
-source = "git+https://github.com/LevitatingBusinessMan/irc?branch=generic_option#a6d7557718f9406c377ff8dfee8f9683d4d2a684"
+source = "git+https://github.com/LevitatingBusinessMan/rust-irc?branch=generic_option#a6d7557718f9406c377ff8dfee8f9683d4d2a684"
 dependencies = [
  "chrono",
  "encoding",
@@ -299,7 +299,7 @@ dependencies = [
 [[package]]
 name = "irc-proto"
 version = "0.15.0"
-source = "git+https://github.com/LevitatingBusinessMan/irc?branch=generic_option#a6d7557718f9406c377ff8dfee8f9683d4d2a684"
+source = "git+https://github.com/LevitatingBusinessMan/rust-irc?branch=generic_option#a6d7557718f9406c377ff8dfee8f9683d4d2a684"
 dependencies = [
  "bytes",
  "encoding",

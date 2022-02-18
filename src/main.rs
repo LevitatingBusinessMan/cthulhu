@@ -14,6 +14,7 @@ pub mod color;
 use user::User;
 
 #[tokio::main]
+/// Welcome to r'lyeh
 async fn main() -> Result<(), Error> {
     //https://docs.rs/irc/0.15.0/irc/client/data/config/struct.Config.html
     let config = config::CONFIG.clone();
@@ -23,10 +24,6 @@ async fn main() -> Result<(), Error> {
 
     let mut stream = client.stream()?;
     let sender = client.sender();
-
-
-    let mut commands_map = HashMap::<&'static str, Box<dyn commands::CommandMethods>>::new();
-    commands::register(&mut commands_map);
 
     while let Some(message) = stream.next().await.transpose()? {
         print!("{}", message);
@@ -41,7 +38,7 @@ async fn main() -> Result<(), Error> {
                 let command = argv.next().unwrap()[1..].to_owned();
                 let arguments = argv.map(|x| x.to_owned()).collect::<Vec<String>>();
                 let target = target.to_owned();
-                handle_command(&mut commands_map, message, command, arguments, target, &sender).await?;
+                handle_command(message, command, arguments, target, &sender).await?;
             }
         }
     }
@@ -54,14 +51,13 @@ Hashmap with functions.
 Sled
 */
 async fn handle_command(
-    map: &mut HashMap::<&'static str, Box<dyn commands::CommandMethods>>,
     message: Message,
     command: String,
     arguments: Vec<String>,
     target: String,
     sender: &Sender
 ) -> anyhow::Result<(),anyhow::Error> {
-    if let Some(cmd) = map.get::<str>(command.as_ref()) {
+    if let Some(cmd) = commands::get_command(command.as_ref()) {
 
         if let Err(error) = cmd.check(&message, &arguments) {
             let error_string = error.to_string();
