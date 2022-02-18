@@ -15,13 +15,8 @@ use user::User;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    // We can also load the Config at runtime via Config::load("path/to/config.toml")
-    let config = Config {
-        nickname: Some("cthulhu".to_owned()),
-        server: Some("irc.libera.chat".to_owned()),
-        channels: vec!["##levis_test".to_owned()],
-        ..Config::default()
-    };
+    //https://docs.rs/irc/0.15.0/irc/client/data/config/struct.Config.html
+    let config = Config::load("config.toml").unwrap();
 
     let mut client = Client::from_config(config).await?;
     client.identify()?;
