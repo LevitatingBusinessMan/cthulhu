@@ -1,5 +1,3 @@
-use std::any;
-
 use anyhow::anyhow;
 use irc::client::prelude::{Message, Prefix};
 

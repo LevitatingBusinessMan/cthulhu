@@ -74,6 +74,7 @@ dependencies = [
  "anyhow",
  "futures",
  "irc",
+ "lazy_static",
  "tokio",
 ]
 
@@ -275,8 +276,7 @@ dependencies = [
 [[package]]
 name = "irc"
 version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c5510c4c4631e53c57d6b05c44ab8447d1db6beef28fb9d12c4d6a46fad9dfcc"
+source = "git+https://github.com/LevitatingBusinessMan/irc?branch=generic_option#a6d7557718f9406c377ff8dfee8f9683d4d2a684"
 dependencies = [
  "chrono",
  "encoding",
@@ -299,8 +299,7 @@ dependencies = [
 [[package]]
 name = "irc-proto"
 version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "55fa0a52d825e59ba8aea5b7503890245aea000f77e68d9b1903f3491fa33643"
+source = "git+https://github.com/LevitatingBusinessMan/irc?branch=generic_option#a6d7557718f9406c377ff8dfee8f9683d4d2a684"
 dependencies = [
  "bytes",
  "encoding",

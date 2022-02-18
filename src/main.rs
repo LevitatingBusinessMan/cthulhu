@@ -16,7 +16,7 @@ use user::User;
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     //https://docs.rs/irc/0.15.0/irc/client/data/config/struct.Config.html
-    let config = Config::load("config.toml").unwrap();
+    let config = config::CONFIG.clone();
 
     let mut client = Client::from_config(config).await?;
     client.identify()?;

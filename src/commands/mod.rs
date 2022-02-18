@@ -17,7 +17,7 @@ pub trait CommandMethods {
 	fn arity(&self) -> Arity;
 	fn aliases(&self) -> Vec<&'static str>;
 	fn god(&self) -> bool;
-	fn check(&self, message: &Message, arguments: &Vec<String>) -> Result<(),errors::Error> {
+	fn check(&self, _message: &Message, arguments: &Vec<String>) -> Result<(),errors::Error> {
 		let argc = arguments.len();
 		let arity_type = self.arity();
 		let arity_error = match arity_type {
@@ -52,9 +52,9 @@ pub trait CommandMethods {
 }
 
 pub trait CommandDetails {
-	const Arity: Arity;
-	const Aliases: Vec<&'static str>;
-	const God: bool;
+	const ARITY: Arity;
+	const ALIASES: Vec<&'static str>;
+	const GOD: bool;
 }
 
 pub fn register(map: &mut HashMap<&'static str, Box<dyn CommandMethods>>) {
