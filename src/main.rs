@@ -5,6 +5,7 @@ use std::collections::HashMap;
 
 static PREFIX: &'static str = "!";
 
+#[macro_use]
 pub mod commands;
 pub mod user;
 pub mod config;

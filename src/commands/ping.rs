@@ -15,22 +15,5 @@ impl CommandMethods for Ping {
 	fn run(&self, _user: User, _arguments: Vec<String>, _target: &String) -> String {
 		return "pong".to_owned();
 	}
-	fn aliases(&self) -> Vec<&'static str> {
-		Self::ALIASES
-	}
-	fn name(&self) -> &'static str {
-		Self::NAME
-	}
-	fn arity(&self) -> Arity {
-		Self::ARITY
-	}
-	fn god(&self) -> bool {
-		Self::GOD
-	}
-	fn usage(&self) -> &'static str {
-		Self::USAGE
-	}
-	fn description(&self) -> &'static str {
-		Self::DESCRIPTION
-	}
+	crate::command_methods!();
 }

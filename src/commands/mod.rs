@@ -41,6 +41,32 @@ fn register(map: &mut HashMap<&'static str, Box<dyn CommandMethods + Sync>>) {
 
 }
 
+#[macro_export]
+/// The [`CommandMethods`] trait requires a bunch of getter methods for constants defined in the [`CommandDetails`] trait.
+/// However [`CommandMethods`] that refer to constants defined in the [`CommandDetails`] trait can't be defined as default methods.
+/// To avoid having to copy paste these methods everywhere this macro is used instead
+macro_rules! command_methods {
+	() => {
+		fn aliases(&self) -> Vec<&'static str> {
+			Self::ALIASES
+		}
+		fn name(&self) -> &'static str {
+			Self::NAME
+		}
+		fn arity(&self) -> Arity {
+			Self::ARITY
+		}
+		fn god(&self) -> bool {
+			Self::GOD
+		}
+		fn usage(&self) -> &'static str {
+			Self::USAGE
+		}
+		fn description(&self) -> &'static str {
+			Self::DESCRIPTION
+		}
+	};
+}
 
 /// Attempt to fetch a command
 pub fn get_command(command: &str) -> Option<&Box<dyn CommandMethods + Sync>> {
@@ -127,9 +153,8 @@ fn usage_color(usage_string: &'static str) -> String {
 }
 
 /// A collection of constants for commands.
-/// These can't be part of the CommandMethods struct of object safety.
+/// These can't be part of the CommandMethods struct due to [object safety](https://doc.rust-lang.org/reference/items/traits.html#object-safety).
 /// CommandMethods has appropiate methods to access these.
-/// https://doc.rust-lang.org/reference/items/traits.html#object-safety
 pub trait CommandDetails {
 	const ARITY: Arity;
 	const NAME: &'static str;

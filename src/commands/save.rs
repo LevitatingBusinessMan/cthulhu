@@ -26,22 +26,5 @@ impl CommandMethods for Save {
 			"This command is currently not available for unprivileged users".to_string()
 		}
 	}
-	fn aliases(&self) -> Vec<&'static str> {
-		Self::ALIASES
-	}
-	fn name(&self) -> &'static str {
-		Self::NAME
-	}
-	fn arity(&self) -> Arity {
-		Self::ARITY
-	}
-	fn god(&self) -> bool {
-		Self::GOD
-	}
-	fn usage(&self) -> &'static str {
-		Self::USAGE
-	}
-	fn description(&self) -> &'static str {
-		Self::DESCRIPTION
-	}
+	crate::command_methods!();
 }
