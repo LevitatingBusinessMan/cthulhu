@@ -3,21 +3,28 @@
 
 #[macro_export]
 macro_rules! red {
-	($str:tt) => {
+	($str:expr) => {
 		format!("\x034{}\x0315", $str)
 	}
 }
 
 #[macro_export]
 macro_rules! green {
-	($str:tt) => {
+	($str:expr) => {
 		format!("\x033{}\x0315", $str)
 	}
 }
 
 #[macro_export]
 macro_rules! grey {
-	($str:tt) => {
+	($str:expr) => {
 		format!("\x0314{}\x0315", $str)
+	}
+}
+
+#[macro_export]
+macro_rules! bold {
+	($str:expr) => {
+		format!("\x030{}\x0315", $str)
 	}
 }

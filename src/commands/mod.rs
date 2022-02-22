@@ -8,6 +8,7 @@ pub mod god;
 pub mod help;
 pub mod save;
 pub mod type_;
+pub mod choose;
 
 pub mod errors;
 
@@ -18,6 +19,7 @@ pub enum Arity {
 
 use irc::client::prelude::Message;
 use crate::user::User;
+use crate::bold;
 
 
 lazy_static! {
@@ -35,6 +37,7 @@ fn register(map: &mut HashMap<&'static str, Box<dyn CommandMethods + Sync>>) {
 	map.insert("help", Box::new(help::Help));
 	map.insert("save", Box::new(save::Save));
 	map.insert("type", Box::new(type_::Type));
+	map.insert("choose", Box::new(choose::Choose));
 
 }
 
@@ -66,9 +69,9 @@ pub trait CommandMethods {
 	}
 	fn help(&self) -> String {
 		if self.usage().is_empty() {
-			format!("{} - {}", self.name(), self.description())
+			format!("{} - {}", bold!(self.name()), self.description())
 		} else {
-			format!("{} {} - {}", self.name(), usage_color(self.usage()), self.description())
+			format!("{} {} - {}", bold!(self.name()), usage_color(self.usage()), self.description())
 		}
 	}
 }
