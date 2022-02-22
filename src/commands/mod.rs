@@ -7,10 +7,9 @@ pub mod ping;
 pub mod god;
 pub mod help;
 pub mod save;
+pub mod type_;
 
 pub mod errors;
-
-use errors::*;
 
 pub enum Arity {
 	Minimum(u8),
@@ -35,6 +34,7 @@ fn register(map: &mut HashMap<&'static str, Box<dyn CommandMethods + Sync>>) {
 	map.insert("god", Box::new(god::God));
 	map.insert("help", Box::new(help::Help));
 	map.insert("save", Box::new(save::Save));
+	map.insert("type", Box::new(type_::Type));
 
 }
 

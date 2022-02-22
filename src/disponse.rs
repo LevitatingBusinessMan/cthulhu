@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 
 static DISPONSE_DB_PATH: &'static str = "disponses";
 
-use sled::{Db, IVec};
+use sled::Db;
 use crate::user::User;
 use std::time::SystemTime;
 use serde::{Serialize, Deserialize};
