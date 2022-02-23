@@ -2,7 +2,7 @@ use irc::client::prelude::*;
 use anyhow::{Result, Error};
 use futures::prelude::*;
 
-static PREFIX: &'static str = "!";
+//static PREFIX: &'static str = "!";
 
 #[macro_use]
 pub mod commands;
@@ -20,6 +20,7 @@ use user::User;
 async fn main() -> Result<(), Error> {
     //https://docs.rs/irc/0.15.0/irc/client/data/config/struct.Config.html
     let config = config::CONFIG.clone();
+    let prefix = config.options.get("prefix").unwrap().to_string();
 
     let mut client = Client::from_config(config).await?;
     client.identify()?;
@@ -35,9 +36,9 @@ async fn main() -> Result<(), Error> {
         */
 
         if let Command::PRIVMSG(ref target, ref msg) = message.command {
-            if msg.starts_with(PREFIX) {
+            if msg.starts_with(&prefix) {
                 let mut argv = msg.split_ascii_whitespace();
-                let command = argv.next().unwrap()[1..].to_owned();
+                let command = argv.next().unwrap()[prefix.len()..].to_owned();
                 let arguments = argv.map(|x| x.to_owned()).collect::<Vec<String>>();
                 let target = target.to_owned();
                 handle_command(message, command, arguments, target, &sender).await?;
