@@ -20,7 +20,7 @@ use user::User;
 async fn main() -> Result<(), Error> {
     //https://docs.rs/irc/0.15.0/irc/client/data/config/struct.Config.html
     let config = config::CONFIG.clone();
-    let prefix = config.options.get("prefix").unwrap().to_string();
+    let prefix = config::PREFIX.to_string();
 
     let mut client = Client::from_config(config).await?;
     client.identify()?;

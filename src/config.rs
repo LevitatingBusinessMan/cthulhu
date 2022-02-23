@@ -6,9 +6,12 @@ use lazy_static::lazy_static;
 
 lazy_static! {
     pub static ref CONFIG: Config = Config::load("config.toml").unwrap();
+	pub static ref PREFIX: String = CONFIG.options.get("prefix").unwrap().as_str().unwrap().to_owned();
+	pub static ref GODS: Vec<String> = CONFIG.get_option("gods").unwrap().clone().try_into().unwrap();
 }
 
 pub fn get_gods() -> Vec<String> {
+	// This has yet to use the static
 	CONFIG.get_option("gods").unwrap().clone().try_into().unwrap()
 }
 
