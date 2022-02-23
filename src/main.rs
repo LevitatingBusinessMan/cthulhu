@@ -1,7 +1,6 @@
 use irc::client::prelude::*;
 use anyhow::{Result, Error};
 use futures::prelude::*;
-use std::collections::HashMap;
 
 static PREFIX: &'static str = "!";
 
@@ -76,7 +75,12 @@ async fn handle_command(
 
     } else {
         Ok(match disponse::get(&command) {
-            Some(dispo) => sender.send_privmsg(message.response_target().unwrap_or(&target), dispo.text)?,
+            Some(dispo) => {
+                sender.send_privmsg(
+                    message.response_target().unwrap_or(&target),
+                    disponse::replace_specials(dispo.text, arguments.join(" "), message.response_target().unwrap_or(&target))
+                )?
+            },
             None => ()
         })
     }

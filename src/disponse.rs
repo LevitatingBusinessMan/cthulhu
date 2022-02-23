@@ -55,3 +55,13 @@ pub fn get(key: &str) -> Option<Disponse> {
 		None
 	}
 }
+
+/// The disponses can have fill-ins.
+/// Currently only <argv> and <channel> are supported. 
+pub fn replace_specials(string: String, arguments: String, channel: &str) -> String {
+	string.replace("<argv>", &arguments).replace("<channel>", channel)
+}
+
+pub fn exists(key: &str) -> Result<bool, sled::Error> {
+	DISPONSES.contains_key(key)
+}

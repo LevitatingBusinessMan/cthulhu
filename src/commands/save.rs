@@ -8,20 +8,25 @@ impl CommandDetails for Save {
 	const ALIASES: Vec<&'static str> = vec![];
 	const GOD: bool = false;
 	const USAGE: &'static str = "name text";
-	const DESCRIPTION: &'static str = "Saves a response to the disponses table. (basically factoids)";
+	const DESCRIPTION: &'static str = "Saves a response to the disponses table (basically factoids). There are currently two special fill-ins: <argv> and <channel>.";
 }
 
 use crate::disponse;
 
 impl CommandMethods for Save {
 	fn run(&self, user: User, arguments: Vec<String>, _target: &String) -> String {
-		let name = &arguments[0];
+		let name = &arguments[0].to_lowercase();
 		let text = arguments[1..].join(" ");
 		if user.god {
-			match disponse::save(&user, name, &text) {
-				Ok(_) => "Succesfully saved disponse".to_owned(),
+			match disponse::exists(name) {
+				Ok(true) => format!("Disponse {} already exists.", name),
+				Ok(false) => match disponse::save(&user, name, &text) {
+					Ok(_) => "Succesfully saved disponse".to_owned(),
+					Err(_) => "Something went wrong accessing the database".to_owned()
+				},
 				Err(_) => "Something went wrong accessing the database".to_owned()
 			}
+			
 		} else {
 			"This command is currently not available for unprivileged users".to_string()
 		}
