@@ -23,6 +23,7 @@ async fn main() -> Result<(), Error> {
     //https://docs.rs/irc/0.15.0/irc/client/data/config/struct.Config.html
     let config = config::CONFIG.clone();
     let prefix = config::PREFIX.to_string();
+    logger::linfo(&format!("Using prefix: {}", prefix));
 
     let mut stream = client::init(config).await?;
     let sender = client().sender();

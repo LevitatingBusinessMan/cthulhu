@@ -1,5 +1,7 @@
 //! This is more or less a copy paste of the logger I wrote for Dagon
 
+// https://github.com/rust-lang/rust/issues/54725 Could this replace backtrace?
+
 use backtrace::{Backtrace, Symbol};
 use chrono::Local;
 

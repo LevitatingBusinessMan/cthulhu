@@ -9,6 +9,7 @@ pub mod help;
 pub mod save;
 pub mod type_;
 pub mod choose;
+pub mod join;
 
 pub mod errors;
 
@@ -38,7 +39,7 @@ fn register(map: &mut HashMap<&'static str, Box<dyn CommandMethods + Sync>>) {
 	map.insert("save", Box::new(save::Save));
 	map.insert("type", Box::new(type_::Type));
 	map.insert("choose", Box::new(choose::Choose));
-
+	map.insert("join", Box::new(join::Join));
 }
 
 #[macro_export]
@@ -76,6 +77,7 @@ pub fn get_command(command: &str) -> Option<&Box<dyn CommandMethods + Sync>> {
 /// Main interface for commands
 pub trait CommandMethods {
 	fn run(&self, user: User, arguments: Vec<String>, target: &String) -> String;
+	/// currently unused
 	fn name(&self) -> &'static str;
 	fn arity(&self) -> Arity;
 	fn aliases(&self) -> Vec<&'static str>;
