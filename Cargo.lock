@@ -155,6 +155,7 @@ dependencies = [
  "futures",
  "irc",
  "lazy_static",
+ "once_cell",
  "rand",
  "serde",
  "sled",

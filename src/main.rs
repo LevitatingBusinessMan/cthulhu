@@ -12,7 +12,9 @@ pub mod config;
 pub mod color;
 pub mod disponse;
 pub mod logger;
+pub mod client;
 
+use client::client;
 use user::User;
 
 #[tokio::main]
@@ -22,11 +24,8 @@ async fn main() -> Result<(), Error> {
     let config = config::CONFIG.clone();
     let prefix = config::PREFIX.to_string();
 
-    let mut client = Client::from_config(config).await?;
-    client.identify()?;
-
-    let mut stream = client.stream()?;
-    let sender = client.sender();
+    let mut stream = client::init(config).await?;
+    let sender = client().sender();
 
     while let Some(message) = stream.next().await.transpose()? {
         print!("{}", message);
