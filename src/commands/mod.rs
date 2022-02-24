@@ -10,6 +10,7 @@ pub mod save;
 pub mod type_;
 pub mod choose;
 pub mod join;
+pub mod dispoinfo;
 
 pub mod errors;
 
@@ -40,6 +41,7 @@ fn register(map: &mut HashMap<&'static str, Box<dyn CommandMethods + Sync>>) {
 	map.insert("type", Box::new(type_::Type));
 	map.insert("choose", Box::new(choose::Choose));
 	map.insert("join", Box::new(join::Join));
+	map.insert("dispoinfo", Box::new(dispoinfo::DispoInfo));
 }
 
 #[macro_export]
@@ -80,6 +82,7 @@ pub trait CommandMethods {
 	/// currently unused
 	fn name(&self) -> &'static str;
 	fn arity(&self) -> Arity;
+	/// currently unused
 	fn aliases(&self) -> Vec<&'static str>;
 	fn god(&self) -> bool;
 	fn usage(&self) -> &'static str;
