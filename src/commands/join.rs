@@ -5,7 +5,6 @@ pub struct Join;
 impl CommandDetails for Join {
 	const ARITY: Arity = Arity::Minimum(1);
 	const NAME: &'static str = "join";
-	const ALIASES: LazyCell<Vec<&'static str>> = LazyCell::new(|| vec![]);
 	const GOD: bool = true;
 	const USAGE: &'static str = "";
 	const DESCRIPTION: &'static str = "Responds with pong.";

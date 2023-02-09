@@ -25,6 +25,8 @@ use irc::client::prelude::Message;
 use crate::user::User;
 use crate::bold;
 
+use self::errors::{PermissionError, ArityError, DependencyError};
+
 
 lazy_static! {
 	pub static ref COMMAND_MAP: HashMap::<&'static str, Box<dyn CommandMethods + Sync>> = {
@@ -71,6 +73,9 @@ macro_rules! command_methods {
 		fn description(&self) -> &'static str {
 			Self::DESCRIPTION
 		}
+		fn depends(&self) -> Vec<&'static str> {
+			std::cell::LazyCell::<Vec<&'static str>>::force(&Self::DEPENDS).clone()
+		}
 	};
 }
 
@@ -85,21 +90,26 @@ pub fn get_command(command: &str) -> Option<&Box<dyn CommandMethods + Sync>> {
 /// Main interface for commands
 pub trait CommandMethods {
 	fn run(&self, user: User, arguments: Vec<String>, target: &String) -> String;
-	/// currently unused
 	fn name(&self) -> &'static str;
 	fn arity(&self) -> Arity;
-	/// currently unused
 	fn aliases(&self) -> Vec<&'static str>;
 	fn god(&self) -> bool;
 	fn usage(&self) -> &'static str;
 	fn description(&self) -> &'static str;
+	fn depends(&self) -> Vec<&'static str>;
 	fn check(&self, _message: &Message, user: &User, arguments: &Vec<String>) -> Result<(),errors::Error> {
 		if let Err(arity_error) = arity_check(arguments.len() as u8, self.arity()) {
 			return Err(errors::Error::ArityError(arity_error));
 		}
 
 		if self.god() && !user.god {
-			return Err(errors::Error::PermissionError(anyhow::anyhow!("You don't have the permission to run this command.")));
+			return Err(errors::Error::PermissionError(PermissionError));
+		}
+
+		for dep in self.depends() {
+			if crate::config::API_KEYS.get(dep).is_none() {
+				return Err(errors::Error::DependencyError(DependencyError { dependency: dep }));
+			}
 		}
 
 		Ok(())
@@ -117,7 +127,12 @@ pub trait CommandMethods {
 /// If the user is god then it will include god commands
 fn generate_help(has_god: bool) -> String {
 	let mut command_list = vec![];
-	for (_name, cmd) in COMMAND_MAP.iter() {
+	'outer: for (_name, cmd) in COMMAND_MAP.iter() {
+		for dep in cmd.depends() {
+			if crate::config::API_KEYS.get(dep).is_none() {
+				continue 'outer
+			}
+		}
 		if has_god  || !cmd.god() {
 			command_list.push(cmd.name()) 
 		}
@@ -169,14 +184,18 @@ fn usage_color(usage_string: &'static str) -> String {
 /// These can't be part of the CommandMethods struct due to [object safety](https://doc.rust-lang.org/reference/items/traits.html#object-safety).
 /// CommandMethods has appropiate methods to access these.
 pub trait CommandDetails {
+	/// The [Arity] of the command
 	const ARITY: Arity;
+	/// Name of the command
 	const NAME: &'static str;
 	/// A list of aliases for the command
-	const ALIASES: LazyCell<Vec<&'static str>>;
+	const ALIASES: LazyCell<Vec<&'static str>> = LazyCell::new(|| vec![]);
 	/// If the command can only be run by an admin
-	const GOD: bool;
+	const GOD: bool = false;
 	/// The usage string, use \<arg\> to denote required arguments and \[arg\] for optional arguments
 	const USAGE: &'static str;
 	/// A short description of the command
 	const DESCRIPTION: &'static str;
+	/// A string of APIs or other dependencies for this command
+	const DEPENDS: LazyCell<Vec<&'static str>> = LazyCell::new(|| vec![]);
 }

@@ -2,18 +2,22 @@
 
 use crate::commands::Arity;
 use std::fmt;
-use anyhow;
-
-pub type PermissionError = anyhow::Error;
 
 pub enum Error {
 	ArityError(ArityError),
 	PermissionError(PermissionError),
+	DependencyError(DependencyError),
 }
+
+pub struct PermissionError;
 
 pub struct ArityError {
 	pub arity_type: Arity,
 	pub actual: u8
+}
+
+pub struct DependencyError {
+	pub dependency: &'static str
 }
 
 impl fmt::Display for ArityError {
@@ -25,11 +29,24 @@ impl fmt::Display for ArityError {
     }
 }
 
+impl fmt::Display for PermissionError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+		write!(f, "You don't have the permission to run this command.")
+	}
+}
+
+impl fmt::Display for DependencyError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+		write!(f, "API {} is not configured.", self.dependency)
+	}
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		return match self {
 			Error::ArityError(err) => err.fmt(f),
 			Error::PermissionError(err) => err.fmt(f),
+    		Error::DependencyError(err) => err.fmt(f),
 		};
     }
 }

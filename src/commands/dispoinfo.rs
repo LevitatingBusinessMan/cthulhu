@@ -6,7 +6,6 @@ impl CommandDetails for DispoInfo {
 	const ARITY: Arity = Arity::Exact(1);
 	const NAME: &'static str = "dispoinfo";
 	const ALIASES: LazyCell<Vec<&'static str>> = LazyCell::new(|| vec!["dinfo"]);
-	const GOD: bool = false;
 	const USAGE: &'static str = "<disponse>";
 	const DESCRIPTION: &'static str = "Get the author and creation time of a disponse";
 }

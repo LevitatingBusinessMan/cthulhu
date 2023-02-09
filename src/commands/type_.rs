@@ -6,8 +6,6 @@ pub struct Type;
 impl CommandDetails for Type {
 	const ARITY: Arity = Arity::Exact(1);
 	const NAME: &'static str = "type";
-	const ALIASES: LazyCell<Vec<&'static str>> = LazyCell::new(|| vec![]);
-	const GOD: bool = false;
 	const USAGE: &'static str = "command";
 	const DESCRIPTION: &'static str = "Check if a command is an actual command or a disponse";
 }

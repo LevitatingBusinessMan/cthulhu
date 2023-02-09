@@ -1,8 +1,8 @@
 #![feature(once_cell)]
 use irc::client::prelude::*;
 use anyhow::{Result, Error};
-use futures::prelude::*;
 use crate::logger::log;
+use futures::stream::StreamExt;
 
 //static PREFIX: &'static str = "!";
 

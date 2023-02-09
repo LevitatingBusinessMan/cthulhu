@@ -5,8 +5,6 @@ pub struct God;
 impl CommandDetails for God {
 	const ARITY: Arity = Arity::Exact(0);
 	const NAME: &'static str = "god";
-	const ALIASES: LazyCell<Vec<&'static str>> = LazyCell::new(|| vec![]);
-	const GOD: bool = false;
 	const USAGE: &'static str = "";
 	const DESCRIPTION: &'static str = "Let's you know if you're a god.";
 }

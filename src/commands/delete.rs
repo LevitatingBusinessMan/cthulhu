@@ -6,7 +6,6 @@ impl CommandDetails for Delete {
 	const ARITY: Arity = Arity::Exact(1);
 	const NAME: &'static str = "delete";
 	const ALIASES: LazyCell<Vec<&'static str>> = LazyCell::new(|| vec!["remove"]);
-	const GOD: bool = false;
 	const USAGE: &'static str = "<name>";
 	const DESCRIPTION: &'static str = "Delete a disponse";
 }
