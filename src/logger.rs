@@ -1,7 +1,3 @@
-//! This is more or less a copy paste of the logger I wrote for Dagon
-
-// https://github.com/rust-lang/rust/issues/54725 Could this replace backtrace?
-
 use backtrace::{Backtrace, Symbol};
 use chrono::Local;
 
@@ -49,25 +45,42 @@ pub fn log(ltype: &str, msg: &str) {
 	};
 }
 
-pub fn linfo(msg: &str) {
-	log("inf", msg);
+#[macro_export]
+macro_rules! linfo {
+	($($arg:tt)*) => { log("inf", &std::fmt::format(std::format_args!($($arg)*))) };
 }
 
-pub fn lsuc(msg: &str) {
-	log("suc", msg);
+#[macro_export]
+macro_rules! lsuc {
+	($($arg:tt)*) => { log("suc", &std::fmt::format(std::format_args!($($arg)*))) };
 }
 
-pub fn lwarn(msg: &str) {
-	log("war", msg);
+#[macro_export]
+macro_rules! lwarn {
+	($($arg:tt)*) => { log("war", &std::fmt::format(std::format_args!($($arg)*))) };
 }
 
-pub fn lerr(msg: &str) {
-	log("err", msg);
+#[macro_export]
+macro_rules! lerr {
+	($($arg:tt)*) => { log("err", &std::fmt::format(std::format_args!($($arg)*))) };
 }
 
-pub fn ldebug(msg: &str) {
-	log("debug", msg);
+#[macro_export]
+macro_rules! ldebug {
+	($($arg:tt)*) => { log("debug", &std::fmt::format(std::format_args!($($arg)*))) };
 }
+
+// https://stackoverflow.com/questions/26731243/how-do-i-use-a-macro-across-module-files
+#[allow(unused_imports)]
+pub(crate) use linfo;
+#[allow(unused_imports)]
+pub(crate) use lsuc;
+#[allow(unused_imports)]
+pub(crate) use lwarn;
+#[allow(unused_imports)]
+pub(crate) use lerr;
+#[allow(unused_imports)]
+pub(crate) use ldebug;
 
 fn get_file_from_symbol(symbol: &Symbol) -> Result<String, ()> {
 	let filename = symbol.filename().ok_or(())?.file_name().ok_or(())?.to_str().ok_or(())?;

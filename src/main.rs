@@ -1,6 +1,8 @@
+#![feature(once_cell)]
 use irc::client::prelude::*;
 use anyhow::{Result, Error};
 use futures::prelude::*;
+use crate::logger::log;
 
 //static PREFIX: &'static str = "!";
 
@@ -11,6 +13,7 @@ pub mod config;
 #[macro_use]
 pub mod color;
 pub mod disponse;
+#[macro_use]
 pub mod logger;
 pub mod client;
 
@@ -23,7 +26,7 @@ async fn main() -> Result<(), Error> {
     //https://docs.rs/irc/0.15.0/irc/client/data/config/struct.Config.html
     let config = config::CONFIG.clone();
     let prefix = config::PREFIX.to_string();
-    logger::linfo(&format!("Using prefix: {}", prefix));
+    linfo!("Using prefix: {}", prefix);
 
     let mut stream = client::init(config).await?;
     let sender = client().sender();
@@ -66,7 +69,7 @@ async fn handle_command(
 
         if let Err(error) = cmd.check(&message, &user, &arguments) {
             let error_string = error.to_string();
-            sender.send_privmsg(message.response_target().unwrap_or(&target),format!("Error for {}: {}", command, error_string))?;
+            sender.send_privmsg(message.response_target().unwrap_or(&target),format!("Error: {}", error_string))?;
             return Ok(())
         }
 
@@ -77,9 +80,10 @@ async fn handle_command(
     } else {
         Ok(match disponse::get(&command) {
             Some(dispo) => {
+                let user = User::try_from(&message)?;
                 sender.send_privmsg(
                     message.response_target().unwrap_or(&target),
-                    disponse::replace_specials(dispo.text, arguments.join(" "), message.response_target().unwrap_or(&target))
+                    disponse::replace_specials(dispo.text, arguments.join(" "), message.response_target().unwrap_or(&target), user)
                 )?
             },
             None => ()

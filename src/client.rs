@@ -1,8 +1,8 @@
 //! This module owns the client
 use irc::client::{prelude::*, ClientStream};
-use once_cell::sync::OnceCell;
+use std::sync::OnceLock;
 
-pub static CLIENT: OnceCell<Client> = OnceCell::new();
+pub static CLIENT: OnceLock<Client> = OnceLock::new();
 
 /// Initialize the client and receive the [`ClientStream`]
 pub async fn init(config: Config) -> Result<ClientStream, irc::error::Error> {

@@ -2,6 +2,7 @@
 
 use std::collections::HashMap;
 use lazy_static::lazy_static;
+use std::cell::LazyCell;
 
 pub mod ping;
 pub mod god;
@@ -11,6 +12,7 @@ pub mod type_;
 pub mod choose;
 pub mod join;
 pub mod dispoinfo;
+pub mod delete;
 
 pub mod errors;
 
@@ -42,6 +44,7 @@ fn register(map: &mut HashMap<&'static str, Box<dyn CommandMethods + Sync>>) {
 	map.insert("choose", Box::new(choose::Choose));
 	map.insert("join", Box::new(join::Join));
 	map.insert("dispoinfo", Box::new(dispoinfo::DispoInfo));
+	map.insert("delete", Box::new(delete::Delete));
 }
 
 #[macro_export]
@@ -51,7 +54,7 @@ fn register(map: &mut HashMap<&'static str, Box<dyn CommandMethods + Sync>>) {
 macro_rules! command_methods {
 	() => {
 		fn aliases(&self) -> Vec<&'static str> {
-			Self::ALIASES
+			std::cell::LazyCell::<Vec<&'static str>>::force(&Self::ALIASES).clone()
 		}
 		fn name(&self) -> &'static str {
 			Self::NAME
@@ -73,7 +76,10 @@ macro_rules! command_methods {
 
 /// Attempt to fetch a command
 pub fn get_command(command: &str) -> Option<&Box<dyn CommandMethods + Sync>> {
-	COMMAND_MAP.get(command)
+	match COMMAND_MAP.get(command) {
+		Some(cmd) => Some(cmd),
+		None => COMMAND_MAP.values().find(|c| c.aliases().contains(&command)),
+	}
 }
 
 /// Main interface for commands
@@ -111,7 +117,7 @@ pub trait CommandMethods {
 /// If the user is god then it will include god commands
 fn generate_help(has_god: bool) -> String {
 	let mut command_list = vec![];
-	for (name, cmd) in COMMAND_MAP.iter() {
+	for (_name, cmd) in COMMAND_MAP.iter() {
 		if has_god  || !cmd.god() {
 			command_list.push(cmd.name()) 
 		}
@@ -154,7 +160,9 @@ fn arity_check(arcg: u8, arity_type: Arity) -> Result<(),errors::ArityError> {
 /// Colorize a usage string
 fn usage_color(usage_string: &'static str) -> String {
 	// Optional arg
-	usage_string.to_owned().replace("<", "\x0314<").replace(">", ">\x0315")
+	usage_string.to_owned()
+		.replace("[", "\x0314[").replace("]", "]\x03")
+		.replace("<", "\x1d<").replace(">", ">\x1d")
 }
 
 /// A collection of constants for commands.
@@ -163,8 +171,12 @@ fn usage_color(usage_string: &'static str) -> String {
 pub trait CommandDetails {
 	const ARITY: Arity;
 	const NAME: &'static str;
-	const ALIASES: Vec<&'static str>;
+	/// A list of aliases for the command
+	const ALIASES: LazyCell<Vec<&'static str>>;
+	/// If the command can only be run by an admin
 	const GOD: bool;
+	/// The usage string, use \<arg\> to denote required arguments and \[arg\] for optional arguments
 	const USAGE: &'static str;
+	/// A short description of the command
 	const DESCRIPTION: &'static str;
 }

@@ -1,13 +1,14 @@
 use crate::commands::*;
+use std::cell::LazyCell;
 
 pub struct Help;
 
 impl CommandDetails for Help {
 	const ARITY: Arity = Arity::Minimum(0);
 	const NAME: &'static str = "help";
-	const ALIASES: Vec<&'static str> = vec![];
+	const ALIASES: LazyCell<Vec<&'static str>> = LazyCell::new(|| vec![]);
 	const GOD: bool = false;
-	const USAGE: &'static str = "<command>";
+	const USAGE: &'static str = "[command]";
 	const DESCRIPTION: &'static str = "Either shows a general help page or a help page for a specific command.";
 }
 

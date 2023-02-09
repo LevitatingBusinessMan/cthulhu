@@ -6,9 +6,9 @@ pub struct Choose;
 impl CommandDetails for Choose {
 	const ARITY: Arity = Arity::Minimum(1);
 	const NAME: &'static str = "choose";
-	const ALIASES: Vec<&'static str> = vec![];
+	const ALIASES: LazyCell<Vec<&'static str>> = LazyCell::new(|| vec![]);
 	const GOD: bool = false;
-	const USAGE: &'static str = "cheese; bacon (; more options)";
+	const USAGE: &'static str = "cheese; bacon [; more options]";
 	const DESCRIPTION: &'static str = "Choose between any amount of options (dividied by ';')";
 }
 
