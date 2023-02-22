@@ -74,7 +74,9 @@ async fn handle_command(
         }
 
         let result = cmd.run(user, arguments, &target);
-        sender.send_privmsg(message.response_target().unwrap_or(&target),result)?;
+        for str in result.split("\n") {
+            sender.send_privmsg(message.response_target().unwrap_or(&target),str)?;
+        }
         return Ok(())
 
     } else {
