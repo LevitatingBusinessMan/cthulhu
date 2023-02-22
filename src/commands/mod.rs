@@ -13,6 +13,7 @@ pub mod choose;
 pub mod join;
 pub mod dispoinfo;
 pub mod delete;
+pub mod weather;
 
 pub mod errors;
 
@@ -47,6 +48,7 @@ fn register(map: &mut HashMap<&'static str, Box<dyn CommandMethods + Sync>>) {
 	map.insert("join", Box::new(join::Join));
 	map.insert("dispoinfo", Box::new(dispoinfo::DispoInfo));
 	map.insert("delete", Box::new(delete::Delete));
+	map.insert("weather", Box::new(weather::Weather));
 }
 
 #[macro_export]
