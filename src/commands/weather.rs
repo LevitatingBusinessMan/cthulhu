@@ -38,7 +38,7 @@ impl CommandMethods for Weather {
 			},
 			Err(err) => {
 				eprintln!("{}", err);
-				return "Some error occured".to_string();
+				return "Failed to retrieve weather".to_string();
 			}
 		}
 
